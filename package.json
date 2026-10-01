@@ -1,0 +1,12 @@
+{
+  "name": "bloodlink-project",
+  "version": "1.0.0",
+  "description": "BloodLink - Web-based Blood Donation Management System",
+  "scripts": {
+    "start": "npm run start:backend",
+    "start:backend": "cd backend && npm start",
+    "start:frontend": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build",
+    "setup:admin": "cd backend && npm run setup:admin"
+  }
+}
