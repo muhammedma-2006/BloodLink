@@ -1,28 +1,66 @@
 /**
  * Resolves the API base URL dynamically.
- * - In production on Vercel, uses import.meta.env.VITE_API_URL (e.g. https://your-backend.vercel.app)
- * - In local development or when VITE_API_URL is unset, defaults to '/api' to leverage Vite dev proxy (http://localhost:5000)
- * - Safely normalizes values whether supplied with or without a trailing slash or '/api' path.
+ * Priority order:
+ * 1. User/Runtime configured override stored in localStorage ('bloodlink_api_url')
+ * 2. Injected define from vite.config.js (__BLOODLINK_API_URL__)
+ * 3. Any Vite environment variable (VITE_API_URL, VITE_BACKEND_URL, etc.)
+ * 4. Automatic heuristic: if running on a Vercel frontend (*-frontend.vercel.app),
+ *    infer the corresponding backend URL (*-backend.vercel.app)
+ * 5. Local development fallback: '/api' (proxied by vite.config.js to http://localhost:5000)
  */
-const rawApiUrl = import.meta.env.VITE_API_URL;
+export const getApiBase = () => {
+  // 1. Check runtime localStorage override
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const saved = window.localStorage.getItem('bloodlink_api_url');
+      if (saved && typeof saved === 'string' && saved.trim()) {
+        const clean = saved.trim().replace(/\/+$/, '');
+        return clean.endsWith('/api') ? clean : `${clean}/api`;
+      }
+    }
+  } catch (e) {}
 
-const getApiBase = () => {
-  if (!rawApiUrl || typeof rawApiUrl !== 'string' || rawApiUrl.trim() === '') {
-    return '/api';
+  // 2. Check build-time injected define from vite.config.js
+  let buildTimeUrl = '';
+  try {
+    if (typeof __BLOODLINK_API_URL__ !== 'undefined' && __BLOODLINK_API_URL__) {
+      buildTimeUrl = __BLOODLINK_API_URL__;
+    }
+  } catch (e) {}
+
+  // 3. Check all possible Vite environment variables
+  const envUrl =
+    buildTimeUrl ||
+    import.meta.env.VITE_API_URL ||
+    import.meta.env.VITE_BACKEND_URL ||
+    import.meta.env.VITE_BACKEND_LINK ||
+    import.meta.env.VITE_BACKEND_LINKS ||
+    import.meta.env.VITE_SERVER_URL ||
+    import.meta.env.VITE_API_BASE ||
+    '';
+
+  if (envUrl && typeof envUrl === 'string' && envUrl.trim() !== '') {
+    const clean = envUrl.trim().replace(/\/+$/, '');
+    return clean.endsWith('/api') ? clean : `${clean}/api`;
   }
-  const trimmed = rawApiUrl.trim().replace(/\/+$/, '');
-  return trimmed.endsWith('/api') ? trimmed : `${trimmed}/api`;
+
+  // 4. Auto-infer backend URL if deployed on a standard Vercel frontend domain
+  if (typeof window !== 'undefined' && window.location) {
+    const hostname = window.location.hostname;
+    if (hostname.includes('-frontend.vercel.app')) {
+      const inferred = `https://${hostname.replace('-frontend.vercel.app', '-backend.vercel.app')}/api`;
+      return inferred;
+    }
+  }
+
+  // 5. Default relative path for local development
+  return '/api';
 };
 
-const API_BASE = getApiBase();
-
-if (import.meta.env.DEV) {
-  console.log(`[BloodLink API] Target Base URL: ${API_BASE}`);
-} else if (!rawApiUrl) {
-  console.warn(
-    '[BloodLink API] VITE_API_URL is unset in this build. Falling back to "/api". If backend is deployed separately, define VITE_API_URL in Vercel project settings and trigger a Redeploy.'
-  );
-}
+// Dynamic API_BASE object whose string evaluation runs getApiBase() on every request
+export const API_BASE = {
+  toString: () => getApiBase(),
+};
 
 const getHeaders = () => {
   const token = localStorage.getItem('bloodlink_token');
@@ -40,8 +78,10 @@ const handleResponse = async (res) => {
   if (!res.ok) {
     let errorMsg = data.message;
     if (!errorMsg) {
-      if (res.status === 404) {
-        errorMsg = `Endpoint not found (404) at ${res.url}. Check that your backend is deployed and VITE_API_URL is set in Vercel.`;
+      if (res.status === 405) {
+        errorMsg = `Request failed with status 405 (Method Not Allowed). The frontend is sending API requests to the static frontend server (${res.url}) instead of your backend. Please set VITE_API_URL to your deployed backend URL in Vercel and redeploy, or click "Connect Backend" in the top banner.`;
+      } else if (res.status === 404) {
+        errorMsg = `Endpoint not found (404) at ${res.url}. Verify that your backend is deployed and that VITE_API_URL is configured in Vercel.`;
       } else {
         errorMsg = `Request failed with status ${res.status}`;
       }

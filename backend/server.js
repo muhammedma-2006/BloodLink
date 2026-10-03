@@ -49,18 +49,14 @@ app.use(
 
       const normalizedOrigin = origin.replace(/\/+$/, '');
 
-      // Allow wildcard or explicit origin match
+      // Allow wildcard, explicit match, local development, or any deployed .vercel.app origin
       if (
         allowedOrigins.includes('*') ||
         allowedOrigins.includes(normalizedOrigin) ||
-        (!process.env.VERCEL && process.env.NODE_ENV !== 'production')
+        (!process.env.VERCEL && process.env.NODE_ENV !== 'production') ||
+        normalizedOrigin.endsWith('.vercel.app') ||
+        normalizedOrigin.includes('vercel.app')
       ) {
-        return callback(null, true);
-      }
-
-      // Allow Vercel preview deployments if configured origin is on vercel.app
-      const isConfiguredVercel = configuredOrigins.some((url) => url.includes('.vercel.app'));
-      if (isConfiguredVercel && (normalizedOrigin.endsWith('.vercel.app') || normalizedOrigin.includes('vercel.app'))) {
         return callback(null, true);
       }
 
