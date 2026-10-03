@@ -1,4 +1,20 @@
-const API_BASE = '/api';
+/**
+ * Resolves the API base URL dynamically.
+ * - In production on Vercel, uses import.meta.env.VITE_API_URL (e.g. https://your-backend.vercel.app)
+ * - In local development or when VITE_API_URL is unset, defaults to '/api' to leverage Vite dev proxy (http://localhost:5000)
+ * - Safely normalizes values whether supplied with or without a trailing slash or '/api' path.
+ */
+const rawApiUrl = import.meta.env.VITE_API_URL;
+
+const getApiBase = () => {
+  if (!rawApiUrl || typeof rawApiUrl !== 'string' || rawApiUrl.trim() === '') {
+    return '/api';
+  }
+  const trimmed = rawApiUrl.trim().replace(/\/+$/, '');
+  return trimmed.endsWith('/api') ? trimmed : `${trimmed}/api`;
+};
+
+const API_BASE = getApiBase();
 
 const getHeaders = () => {
   const token = localStorage.getItem('bloodlink_token');
