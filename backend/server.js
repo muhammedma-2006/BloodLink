@@ -164,13 +164,25 @@ app.get('/eligibility-rules', (req, res) => {
   });
 });
 
-// API Routes
+// API Routes (mounted on both /api/* and root /* for seamless proxy & serverless routing)
 app.use('/api/auth', authRoutes);
+app.use('/auth', authRoutes);
+
 app.use('/api/donor', donorRoutes);
+app.use('/donor', donorRoutes);
+
 app.use('/api/hospital', hospitalRoutes);
+app.use('/hospital', hospitalRoutes);
+
 app.use('/api/admin', adminRoutes);
+app.use('/admin', adminRoutes);
+
 app.use('/api/inventory', inventoryRoutes);
+app.use('/inventory', inventoryRoutes);
+
 app.use('/api/notifications', notificationRoutes);
+app.use('/notifications', notificationRoutes);
+
 
 // Global Error Handler
 app.use((err, req, res, next) => {

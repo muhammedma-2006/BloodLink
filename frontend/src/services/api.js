@@ -16,6 +16,14 @@ const getApiBase = () => {
 
 const API_BASE = getApiBase();
 
+if (import.meta.env.DEV) {
+  console.log(`[BloodLink API] Target Base URL: ${API_BASE}`);
+} else if (!rawApiUrl) {
+  console.warn(
+    '[BloodLink API] VITE_API_URL is unset in this build. Falling back to "/api". If backend is deployed separately, define VITE_API_URL in Vercel project settings and trigger a Redeploy.'
+  );
+}
+
 const getHeaders = () => {
   const token = localStorage.getItem('bloodlink_token');
   const headers = {
@@ -30,7 +38,14 @@ const getHeaders = () => {
 const handleResponse = async (res) => {
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
-    const errorMsg = data.message || `Request failed with status ${res.status}`;
+    let errorMsg = data.message;
+    if (!errorMsg) {
+      if (res.status === 404) {
+        errorMsg = `Endpoint not found (404) at ${res.url}. Check that your backend is deployed and VITE_API_URL is set in Vercel.`;
+      } else {
+        errorMsg = `Request failed with status ${res.status}`;
+      }
+    }
     const err = new Error(errorMsg);
     err.data = data;
     throw err;
