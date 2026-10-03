@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, Activity, Calendar, MapPin, Clock, ArrowRight, CheckCircle2, XCircle, AlertTriangle } from 'lucide-react';
+import { Heart, Activity, Calendar, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { api } from '../../services/api';

@@ -1,17 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  Shield,
-  Users,
-  Hospital,
-  Heart,
-  Package,
-  TrendingUp,
-  Clock,
-  ArrowRight,
-  CheckCircle2,
-  AlertTriangle,
-} from 'lucide-react';
+import { Shield, Heart, Package } from 'lucide-react';
 import { api } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
 import { StatusBadge } from '../../components/StatusBadge';

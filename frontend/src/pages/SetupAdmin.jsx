@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Shield, Lock, Mail, User, AlertCircle, CheckCircle2, ArrowRight } from 'lucide-react';
+import { Lock, Mail, User, AlertCircle, CheckCircle2, ArrowRight } from 'lucide-react';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -15,7 +15,7 @@ export const SetupAdmin = () => {
   const [error, setError] = useState('');
 
   const { login } = useAuth();
-  const { showSuccess, showError } = useToast();
+  const { showSuccess } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {

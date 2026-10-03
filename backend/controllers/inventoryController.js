@@ -53,13 +53,23 @@ exports.updateInventory = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Blood group and units are required.' });
     }
 
-    const hospital = await HospitalProfile.findOne({ userId: req.user.id });
-    if (!hospital) {
-      return res.status(404).json({ success: false, message: 'Hospital profile not found.' });
+    let targetHospitalId;
+
+    if (req.user.role === 'hospital') {
+      const hospital = await HospitalProfile.findOne({ userId: req.user.id });
+      if (!hospital) {
+        return res.status(404).json({ success: false, message: 'Hospital profile not found.' });
+      }
+      targetHospitalId = hospital._id;
+    } else if (req.user.role === 'admin') {
+      targetHospitalId = req.body.hospitalId || req.query.hospitalId;
+      if (!targetHospitalId) {
+        return res.status(400).json({ success: false, message: 'hospitalId is required for administrator inventory updates.' });
+      }
     }
 
     const item = await BloodInventory.findOneAndUpdate(
-      { hospitalId: hospital._id, bloodGroup },
+      { hospitalId: targetHospitalId, bloodGroup },
       { $set: { units: Math.max(0, parseInt(units, 10)), lastUpdated: new Date() } },
       { upsert: true, new: true }
     );

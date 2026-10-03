@@ -1,5 +1,5 @@
 import React from 'react';
-import { Droplet, Heart, Shield, PhoneCall } from 'lucide-react';
+import { Heart, PhoneCall } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export const Footer = () => {

@@ -4,7 +4,7 @@ const HospitalProfile = require('../models/HospitalProfile');
 const BloodRequest = require('../models/BloodRequest');
 const Donation = require('../models/Donation');
 const BloodInventory = require('../models/BloodInventory');
-const RequestMatch = require('../models/RequestMatch');
+
 
 // @desc    Admin dashboard summary metrics
 // @route   GET /api/admin/stats
@@ -73,20 +73,30 @@ exports.getAllUsers = async (req, res) => {
     const query = role ? { role } : {};
     const users = await User.find(query).select('-password').sort({ createdAt: -1 });
 
-    const enrichedUsers = await Promise.all(
-      users.map(async (u) => {
-        let details = null;
-        if (u.role === 'donor') {
-          details = await DonorProfile.findOne({ userId: u._id });
-        } else if (u.role === 'hospital') {
-          details = await HospitalProfile.findOne({ userId: u._id });
-        }
-        return {
-          ...u.toObject(),
-          profileDetails: details,
-        };
-      })
-    );
+    const donorUserIds = users.filter((u) => u.role === 'donor').map((u) => u._id);
+    const hospitalUserIds = users.filter((u) => u.role === 'hospital').map((u) => u._id);
+
+    const [donorProfiles, hospitalProfiles] = await Promise.all([
+      donorUserIds.length > 0 ? DonorProfile.find({ userId: { $in: donorUserIds } }) : [],
+      hospitalUserIds.length > 0 ? HospitalProfile.find({ userId: { $in: hospitalUserIds } }) : [],
+    ]);
+
+    const donorMap = new Map(donorProfiles.map((p) => [p.userId.toString(), p]));
+    const hospitalMap = new Map(hospitalProfiles.map((p) => [p.userId.toString(), p]));
+
+    const enrichedUsers = users.map((u) => {
+      let details = null;
+      const uId = u._id.toString();
+      if (u.role === 'donor') {
+        details = donorMap.get(uId) || null;
+      } else if (u.role === 'hospital') {
+        details = hospitalMap.get(uId) || null;
+      }
+      return {
+        ...u.toObject(),
+        profileDetails: details,
+      };
+    });
 
     res.json({
       success: true,

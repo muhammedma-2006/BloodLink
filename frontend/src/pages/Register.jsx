@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Droplet, Heart, Hospital, User, Mail, Lock, Phone, MapPin, Calendar, AlertCircle } from 'lucide-react';
+import { Heart, Hospital, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 

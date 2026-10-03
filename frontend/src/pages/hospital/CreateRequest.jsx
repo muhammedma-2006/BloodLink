@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PlusCircle, Heart, User, MapPin, Calendar, Clock, AlertTriangle, ArrowLeft } from 'lucide-react';
+import { PlusCircle, ArrowLeft } from 'lucide-react';
 import { api } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';

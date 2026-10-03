@@ -4,6 +4,10 @@ const RequestMatch = require('../models/RequestMatch');
 const Notification = require('../models/Notification');
 const { evaluateEligibility } = require('./eligibilityService');
 
+const escapeRegex = (string) => {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+};
+
 /**
  * Finds matching donors for a given BloodRequest and generates Match & Notification records
  */
@@ -18,8 +22,9 @@ const matchDonorsForRequest = async (bloodRequest, hospitalProfile) => {
     };
 
     // If request has location, prioritize same city or nearby
-    if (bloodRequest.location) {
-      const cityRegex = new RegExp(bloodRequest.location.trim().split(',')[0], 'i');
+    if (bloodRequest.location && typeof bloodRequest.location === 'string') {
+      const citySegment = bloodRequest.location.trim().split(',')[0].trim();
+      const cityRegex = new RegExp(escapeRegex(citySegment), 'i');
       candidateQuery.$or = [
         { city: cityRegex },
         { address: cityRegex },

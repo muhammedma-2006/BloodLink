@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldCheck, BookOpen, GitMerge, Database, Heart, CheckCircle2 } from 'lucide-react';
+import { ShieldCheck, GitMerge, CheckCircle2 } from 'lucide-react';
 
 export const About = () => {
   return (

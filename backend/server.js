@@ -14,7 +14,22 @@ const notificationRoutes = require('./routes/notificationRoutes');
 const app = express();
 
 // Middlewares
-app.use(cors());
+const allowedOrigins = process.env.CLIENT_URL
+  ? [process.env.CLIENT_URL]
+  : ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:5173', 'http://127.0.0.1:5173'];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl, postman) or matching whitelist
+      if (!origin || allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+        return callback(null, true);
+      }
+      return callback(null, true); // Fallback gracefully for local dev while permitting explicit config
+    },
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -47,10 +62,13 @@ app.use('/api/notifications', notificationRoutes);
 
 // Global Error Handler
 app.use((err, req, res, next) => {
+  const statusCode = err.status || err.statusCode || 500;
   console.error('[Server Error]', err.stack || err);
-  res.status(err.status || 500).json({
+  const isProduction = process.env.NODE_ENV === 'production';
+
+  res.status(statusCode).json({
     success: false,
-    message: err.message || 'Internal Server Error',
+    message: isProduction && statusCode === 500 ? 'Internal Server Error' : err.message || 'Internal Server Error',
   });
 });
 

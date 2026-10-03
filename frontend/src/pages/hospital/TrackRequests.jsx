@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Clock, PlusCircle, Search, Filter, ArrowRight, Ban, CheckCircle2 } from 'lucide-react';
+import { Clock, PlusCircle, Search, ArrowRight, Ban } from 'lucide-react';
 import { api } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
 import { StatusBadge } from '../../components/StatusBadge';

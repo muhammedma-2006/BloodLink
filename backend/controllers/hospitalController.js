@@ -9,6 +9,10 @@ const { matchDonorsForRequest } = require('../services/matchingService');
 const { evaluateEligibility } = require('../services/eligibilityService');
 const { BLOOD_COMPATIBILITY } = require('../config/eligibilityConfig');
 
+const escapeRegex = (string) => {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+};
+
 // @desc    Get hospital profile
 // @route   GET /api/hospital/profile
 // @access  Private (Hospital)
@@ -66,8 +70,9 @@ exports.searchDonors = async (req, res) => {
       query.bloodGroup = { $in: compatible };
     }
 
-    if (location) {
-      const locRegex = new RegExp(location.trim(), 'i');
+    if (location && typeof location === 'string') {
+      const sanitizedLocation = escapeRegex(location.trim());
+      const locRegex = new RegExp(sanitizedLocation, 'i');
       query.$or = [{ city: locRegex }, { state: locRegex }, { address: locRegex }];
     }
 

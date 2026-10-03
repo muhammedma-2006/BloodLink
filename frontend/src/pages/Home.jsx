@@ -1,17 +1,11 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {
-  Droplet,
   Heart,
   Hospital,
   ShieldCheck,
   ArrowRight,
-  Search,
-  Users,
-  Clock,
   CheckCircle2,
-  Calendar,
-  Activity,
   Layers,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';

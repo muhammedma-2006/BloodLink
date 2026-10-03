@@ -4,15 +4,11 @@ import {
   ArrowLeft,
   Clock,
   Heart,
-  User,
   Phone,
   Mail,
-  MapPin,
   CheckCircle2,
   XCircle,
-  AlertCircle,
   Award,
-  Calendar,
 } from 'lucide-react';
 import { api } from '../../services/api';
 import { useToast } from '../../context/ToastContext';

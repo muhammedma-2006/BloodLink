@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Hospital, Phone, MapPin, Save, ShieldCheck } from 'lucide-react';
+import { Save } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { api } from '../../services/api';

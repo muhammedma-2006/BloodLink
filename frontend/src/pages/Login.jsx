@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Droplet, Mail, Lock, ArrowRight, AlertCircle, ShieldAlert } from 'lucide-react';
+import { Mail, Lock, ArrowRight, AlertCircle, ShieldAlert } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { api } from '../services/api';

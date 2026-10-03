@@ -71,4 +71,7 @@ const bloodRequestSchema = new mongoose.Schema(
   }
 );
 
+bloodRequestSchema.index({ hospitalId: 1, status: 1 });
+bloodRequestSchema.index({ bloodGroup: 1, status: 1 });
+
 module.exports = mongoose.model('BloodRequest', bloodRequestSchema);

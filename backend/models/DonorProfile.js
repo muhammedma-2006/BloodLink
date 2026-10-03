@@ -75,6 +75,9 @@ const donorProfileSchema = new mongoose.Schema(
   }
 );
 
+donorProfileSchema.index({ bloodGroup: 1, isAvailable: 1 });
+donorProfileSchema.index({ city: 1, bloodGroup: 1 });
+
 // Virtual for calculating current age from DOB
 donorProfileSchema.virtual('age').get(function () {
   if (!this.dob) return null;

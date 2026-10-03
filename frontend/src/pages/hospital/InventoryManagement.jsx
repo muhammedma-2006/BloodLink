@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Package, Droplet, Plus, Minus, RefreshCw, Save, ShieldCheck } from 'lucide-react';
+import { Package, Plus, Minus } from 'lucide-react';
 import { api } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
 

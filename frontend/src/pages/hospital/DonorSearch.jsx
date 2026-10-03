@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, MapPin, Heart, ShieldCheck, Filter, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Search, Heart, ShieldCheck, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { api } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
 
